@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, CacheKey } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BIKE_REPOSITORY } from '../../constants';
 import { BikeModel } from '../db/models/bike';
@@ -15,21 +15,15 @@ export class BikeService {
     private readonly bikeRepository: typeof BikeModel
   ){}
 
+  // TODO: some sort of pagination handling
   async findAll(): Promise<BikeModel[]> {
-    // console.log("gogekjrgm")
-    // return this.bikeRepository.find();
-    return this.bikeRepository.findAll<BikeModel>();
+    const query = {
+      limit: 10,
+    }
+    return this.bikeRepository.findAll<BikeModel>(query);
   }
 
-  // TODO: find out why 
-  // create(bike: CreateBikeDto): Promise<BikeModel> {
-    // this.bikes.push(bike)
-    // return await this.bikeRepository.create<BikeModel>(bike);
-  // }
-// DOesnt work 
-
-  async create(bike :{[id: number]: CreateBikeDto}  /*CreateBikeDto*/): Promise<BikeModel> {
-    // this.bikes.push(bike)
+  async create(bike :{[id: number]: CreateBikeDto} ): Promise<BikeModel> {
     return await this.bikeRepository.create<BikeModel>(bike);
   }
 
@@ -37,9 +31,16 @@ export class BikeService {
     return await this.bikeRepository.findOne<BikeModel>({ where: { name } });
 }
   
-  findOne(id: number): Promise<BikeModel> {
-    return this.bikeRepository.findByPk<BikeModel>(id);
+async findOneById(id: number): Promise<BikeModel> {
+  const query = {
+    where : {id},
+    attributes: [],
+    hooks: false,
   }
+  const bikes = await this.bikeRepository.findOne<BikeModel>({ where: { id }})
+
+  return bikes;
+}
 
   // async remove(id: number): Promise<void> {
   //   await this.bikeRepository.delete(id);

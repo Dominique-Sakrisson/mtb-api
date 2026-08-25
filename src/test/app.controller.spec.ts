@@ -14,9 +14,11 @@ describe('AppController', () => {
     appController = app.get<AppController>(AppController);
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+  describe('root route returns with a welcome message ', () => {
+    it('should return a message that equals the expected"', () => {
+      const result = appController.getHello()
+      const expectedMessage = "Welcome to BikeBin™"
+      expect(result).toBe(expectedMessage);
     });
   });
 });
